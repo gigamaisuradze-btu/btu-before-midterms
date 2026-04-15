@@ -38,7 +38,9 @@ fun ClothingCard(
     onItemClick: (ClothingItem) -> Unit
 ) {
     Column(
-        modifier = Modifier.clickable {
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
             onItemClick.invoke(clothingItem)
         }
     ) {
@@ -46,7 +48,7 @@ fun ClothingCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(150F / 210F)
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(32.dp))
         ) {
             Image(
                 painter = painterResource(clothingItem.image),

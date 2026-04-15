@@ -4,15 +4,18 @@ import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class ClothingItem(
     val title: String,
     val price: Int,
     @DrawableRes val image: Int,
     val isFavorite: Boolean,
     val clothingType: ClothingType
-)
+) : Parcelable
 
-enum class ClothingType {
+@Parcelize
+enum class ClothingType : Parcelable {
+    ALL,
     TROUSERS,
     SHIRTS,
     HOODIES,

@@ -3,11 +3,11 @@ package com.example.lecture1.model
 import com.example.lecture1.R
 
 object Data {
-    val filters = mutableListOf(
+    val filters = listOf(
         Filter(
-            title = "All",
+            title = "Trousers",
             isSelected = true,
-            clothingType = ClothingType.ALL
+            clothingType = ClothingType.TROUSERS
         ),
         Filter(
             title = "Shirts",
@@ -25,7 +25,7 @@ object Data {
             clothingType = ClothingType.PANTS
         ),
         Filter(
-            title = "Trousers",
+            title = "Black Trousers",
             isSelected = false,
             clothingType = ClothingType.TROUSERS
         ),

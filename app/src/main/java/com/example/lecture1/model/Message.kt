@@ -1,6 +1,10 @@
 package com.example.lecture1.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+
+@Parcelize
 data class Message(
     val name: String,
     val message: String,
@@ -9,9 +13,10 @@ data class Message(
     val email: String = "giga.btu@edu.ge",
     val phoneNumber: String = "+995599999999",
     val messageType: MessageType
-)
+) : Parcelable
 
-enum class MessageType {
+@Parcelize
+enum class MessageType:  Parcelable {
     Unread,
     Typing,
     Voice,

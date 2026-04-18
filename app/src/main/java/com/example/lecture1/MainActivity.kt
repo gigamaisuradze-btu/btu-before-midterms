@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.lecture1.components.MessageDetail
 import com.example.lecture1.components.MessageListScreen
+import com.example.lecture1.model.ClothingItem
 import com.example.lecture1.model.ClothingType
 import com.example.lecture1.model.Data
 import com.example.lecture1.screen.ClothingScreen
@@ -28,9 +29,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             Lecture1Theme {
                 val navController = rememberNavController()
-                var selectedFilter by remember { mutableStateOf<ClothingType?>(null) }
                 var clothes by remember { mutableStateOf(Data.clothingItems) }
                 var filters by remember { mutableStateOf(Data.filters) }
+                val selectedFilter = filters.find { it.isSelected }
+
+                val filteredClothes = clothes.filter { item ->
+                    item.clothingType == selectedFilter?.clothingType
+                }
+
+                val items = when {
+                    selectedFilter?.clothingType == ClothingType.ALL -> clothes
+                    else -> {filteredClothes}
+                }
 
                 NavHost(
                    navController = navController,
@@ -41,10 +51,19 @@ class MainActivity : ComponentActivity() {
                     ) { backStack ->
                         ClothingScreen(
                             filters = filters,
-                            clothes = clothes,
+                            clothes = items,
                             onItemClick = {
                                 navController.currentBackStackEntry?.savedStateHandle?.set("clothing_item", it)
-
+                                navController.navigate(DETAILS_SCREEN)
+                            },
+                            onFilterClick = {
+                                filters = filters.map { currentFilter ->
+                                    if (currentFilter == it) {
+                                        currentFilter.copy(isSelected = true)
+                                    } else {
+                                        currentFilter.copy(isSelected = false)
+                                    }
+                                }
                             },
                             onFavoriteClick = {
                                 clothes = clothes.map { currentItem ->
@@ -59,11 +78,13 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(
-                        route = "${DETAILS_SCREEN}/{name}"
+                        route = "${DETAILS_SCREEN}"
                     ) { backStack ->
-                        val name = backStack.arguments?.getString("name") ?: ""
+                        val item = navController.previousBackStackEntry?.savedStateHandle?.get<ClothingItem>("clothing_item")
 
-                        MessageDetail(name)
+                        item?.title?.let {
+                            MessageDetail(it)
+                        }
                     }
                 }
             }

@@ -5,8 +5,13 @@ import com.example.lecture1.R
 object Data {
     val filters = listOf(
         Filter(
-            title = "Trousers",
+            title = "All",
             isSelected = true,
+            clothingType = ClothingType.ALL
+        ),
+        Filter(
+            title = "Trousers",
+            isSelected = false,
             clothingType = ClothingType.TROUSERS
         ),
         Filter(

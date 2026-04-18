@@ -22,18 +22,16 @@ fun ClothingScreen(
     clothes: List<ClothingItem>,
     onFavoriteClick: (ClothingItem) -> Unit,
     onItemClick: (ClothingItem) -> Unit,
+    onFilterClick: (Filter) -> Unit,
 ) {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
             FiltersList(
-                filters
-            ) {
-
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
+                filters = filters,
+                onFilterClick = { onFilterClick.invoke(it) }
+            )
 
             ClothesGrid(
                 clothes = clothes,

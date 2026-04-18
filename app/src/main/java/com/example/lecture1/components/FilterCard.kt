@@ -27,7 +27,7 @@ fun FilterCard(
                 if (filterItem.isSelected) Color(0xFF3ED598)
                 else Color(0xFF30444E)
             )
-            .padding(vertical = 16.dp, horizontal = 8.dp)
+            .padding(all = 12.dp)
             .clickable {
                 onClick.invoke()
             }

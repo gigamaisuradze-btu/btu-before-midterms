@@ -13,7 +13,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.lecture1.components.MessageDetail
-import com.example.lecture1.components.MessageListScreen
 import com.example.lecture1.model.ClothingItem
 import com.example.lecture1.model.ClothingType
 import com.example.lecture1.model.Data
@@ -48,7 +47,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable(
                         route = LIST_SCREEN
-                    ) { backStack ->
+                    ) { _ ->
                         ClothingScreen(
                             filters = filters,
                             clothes = items,
@@ -78,8 +77,8 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(
-                        route = "${DETAILS_SCREEN}"
-                    ) { backStack ->
+                        route = DETAILS_SCREEN
+                    ) { _ ->
                         val item = navController.previousBackStackEntry?.savedStateHandle?.get<ClothingItem>("clothing_item")
 
                         item?.title?.let {

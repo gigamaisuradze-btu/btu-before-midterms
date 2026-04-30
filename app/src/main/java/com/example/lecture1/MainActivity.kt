@@ -5,19 +5,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.lecture1.components.MessageDetail
 import com.example.lecture1.model.ClothingItem
-import com.example.lecture1.model.ClothingType
-import com.example.lecture1.model.Data
 import com.example.lecture1.screen.ClothingScreen
 import com.example.lecture1.ui.theme.Lecture1Theme
+import com.example.lecture1.screen.ClothingViewModel
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalFoundationApi::class)
@@ -28,62 +27,35 @@ class MainActivity : ComponentActivity() {
         setContent {
             Lecture1Theme {
                 val navController = rememberNavController()
-                var clothes by remember { mutableStateOf(Data.clothingItems) }
-                var filters by remember { mutableStateOf(Data.filters) }
-                val selectedFilter = filters.find { it.isSelected }
+                val viewModel: ClothingViewModel = viewModel()
+                val uiState by viewModel.uiState.collectAsState()
 
-                val filteredClothes = clothes.filter { item ->
-                    item.clothingType == selectedFilter?.clothingType
-                }
-
-                val items = when {
-                    selectedFilter?.clothingType == ClothingType.ALL -> clothes
-                    else -> {filteredClothes}
+                LaunchedEffect(viewModel) {
+                    viewModel.navigationEvent.collect { item ->
+                        navController.currentBackStackEntry
+                            ?.savedStateHandle?.set("clothing_item", item)
+                        navController.navigate(DETAILS_SCREEN)
+                    }
                 }
 
                 NavHost(
-                   navController = navController,
+                    navController = navController,
                     startDestination = LIST_SCREEN
                 ) {
-                    composable(
-                        route = LIST_SCREEN
-                    ) { _ ->
+                    composable(route = LIST_SCREEN) {
                         ClothingScreen(
-                            filters = filters,
-                            clothes = items,
-                            onItemClick = {
-                                navController.currentBackStackEntry?.savedStateHandle?.set("clothing_item", it)
-                                navController.navigate(DETAILS_SCREEN)
-                            },
-                            onFilterClick = {
-                                filters = filters.map { currentFilter ->
-                                    if (currentFilter == it) {
-                                        currentFilter.copy(isSelected = true)
-                                    } else {
-                                        currentFilter.copy(isSelected = false)
-                                    }
-                                }
-                            },
-                            onFavoriteClick = {
-                                clothes = clothes.map { currentItem ->
-                                    if (currentItem == it) {
-                                        currentItem.copy(isFavorite = !currentItem.isFavorite)
-                                    } else {
-                                        currentItem
-                                    }
-                                }
-                            }
+                            filters = uiState.filters,
+                            clothes = uiState.filteredClothes,
+                            onItemClick = { viewModel.onItemClick(it) },
+                            onFilterClick = { viewModel.onFilterClick(it) },
+                            onFavoriteClick = { viewModel.onFavoriteClick(it) }
                         )
                     }
 
-                    composable(
-                        route = DETAILS_SCREEN
-                    ) { _ ->
-                        val item = navController.previousBackStackEntry?.savedStateHandle?.get<ClothingItem>("clothing_item")
-
-                        item?.title?.let {
-                            MessageDetail(it)
-                        }
+                    composable(route = DETAILS_SCREEN) {
+                        val item = navController.previousBackStackEntry
+                            ?.savedStateHandle?.get<ClothingItem>("clothing_item")
+                        item?.title?.let { MessageDetail(it) }
                     }
                 }
             }
@@ -95,9 +67,3 @@ class MainActivity : ComponentActivity() {
         const val DETAILS_SCREEN = "DETAILS_SCREEN"
     }
 }
-
-
-
-
-
-

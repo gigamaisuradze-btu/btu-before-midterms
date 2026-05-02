@@ -12,28 +12,35 @@ import com.example.lecture1.model.ClothingItem
 
 @Composable
 fun ClothesGrid(
-    clothes: List<ClothingItem>,
-    onClick: (ClothingItem) -> Unit,
-    onFavoriteClick: (ClothingItem) -> Unit
+    clothes: List<ClothingItem>?,
+    isLoading: Boolean = false,
+    onFavoriteClick: (ClothingItem) -> Unit,
+    onClick: (ClothingItem) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(clothes) { cloth ->
-            ClothingCard(
-                clothingItem = cloth ,
-                onFavoriteClick = {
-                    onFavoriteClick.invoke(cloth)
-                },
-                onItemClick = {
-                    onClick.invoke(cloth)
-                }
-            )
+        if (isLoading) {
+            items(6) {
+                ClothingCard(
+                    isLoading = true,
+                    clothingItem = null,
+                    onFavoriteClick = {},
+                    onItemClick = {}
+                )
+            }
+        } else {
+            items(clothes.orEmpty()) { item ->
+                ClothingCard(
+                    isLoading = false,
+                    clothingItem = item,
+                    onFavoriteClick = { onFavoriteClick.invoke(item) },
+                    onItemClick = { onClick.invoke(item) }
+                )
+            }
         }
-
     }
-
 }

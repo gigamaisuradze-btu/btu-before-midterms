@@ -1,5 +1,6 @@
 package com.example.lecture1.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import com.example.lecture1.model.Filter
 fun ClothingScreen(
     filters: List<Filter>,
     clothes: List<ClothingItem>,
+    isLoading: Boolean,
     onFavoriteClick: (ClothingItem) -> Unit,
     onItemClick: (ClothingItem) -> Unit,
     onFilterClick: (Filter) -> Unit,
@@ -28,6 +30,7 @@ fun ClothingScreen(
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
+            Log.d("LOADING SCREEN", "ClothingScreen: ")
             FiltersList(
                 filters = filters,
                 onFilterClick = { onFilterClick.invoke(it) }
@@ -35,6 +38,7 @@ fun ClothingScreen(
 
             ClothesGrid(
                 clothes = clothes,
+                isLoading = isLoading,
                 onClick = { onItemClick.invoke(it) },
                 onFavoriteClick = { onFavoriteClick.invoke(it) }
             )

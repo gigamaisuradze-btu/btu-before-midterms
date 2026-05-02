@@ -8,6 +8,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
             Lecture1Theme {
                 val navController = rememberNavController()
                 val viewModel: ClothingViewModel = viewModel()
-                val uiState by viewModel.uiState.collectAsState()
+                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
                 LaunchedEffect(viewModel) {
                     viewModel.navigationEvent.collect { item ->
@@ -46,6 +47,7 @@ class MainActivity : ComponentActivity() {
                         ClothingScreen(
                             filters = uiState.filters,
                             clothes = uiState.filteredClothes,
+                            isLoading = uiState.isLoading,
                             onItemClick = { viewModel.onItemClick(it) },
                             onFilterClick = { viewModel.onFilterClick(it) },
                             onFavoriteClick = { viewModel.onFavoriteClick(it) }

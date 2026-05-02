@@ -6,6 +6,7 @@ import com.example.lecture1.model.ClothingItem
 import com.example.lecture1.model.ClothingType
 import com.example.lecture1.model.Data
 import com.example.lecture1.model.Filter
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -16,10 +17,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class ClothingUiState(
-    val clothes: List<ClothingItem> = Data.clothingItems,
-    val filters: List<Filter> = Data.filters,
+    val clothes: List<ClothingItem> = emptyList(),
+    val filters: List<Filter> = emptyList(),
+    val isLoading: Boolean = true,
 ) {
-    val selectedFilter: Filter? get() = filters.find { it.isSelected }
+    val selectedFilter: Filter? = filters.find { it.isSelected }
 
     val filteredClothes: List<ClothingItem> get() = when (selectedFilter?.clothingType) {
         ClothingType.ALL, null -> clothes
@@ -33,6 +35,22 @@ class ClothingViewModel : ViewModel() {
 
     private val _navigationEvent = MutableSharedFlow<ClothingItem>()
     val navigationEvent: SharedFlow<ClothingItem> = _navigationEvent.asSharedFlow()
+
+    init {
+        viewModelScope.launch {
+
+            delay(5000)
+
+            _uiState.update { current ->
+                current.copy(
+                    isLoading = false,
+                    filters = Data.filters,
+                    clothes = Data.clothingItems
+                )
+            }
+        }
+
+    }
 
     fun onItemClick(item: ClothingItem) {
         viewModelScope.launch {

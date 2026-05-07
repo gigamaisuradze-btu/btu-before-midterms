@@ -38,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.lecture1.model.ClothingItem
 
 @Composable
@@ -89,27 +90,29 @@ fun ClothingCard(
                 )
         ) {
             if (!isLoading) {
-                Image(
-                    painter = painterResource(clothingItem?.image ?: 0),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+                clothingItem?.let {
+                    AsyncImage(
+                        model = clothingItem.imageUrl,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
 
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(16.dp)
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(Color.White)
-                ) {
-                    IconButton(onClick = { onFavoriteClick.invoke() }) {
-                        Icon(
-                            imageVector = Icons.Default.Favorite,
-                            contentDescription = null,
-                            tint = if (clothingItem?.isFavorite == true) Color.Red else Color.LightGray
-                        )
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(16.dp)
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color.White)
+                    ) {
+                        IconButton(onClick = { onFavoriteClick.invoke() }) {
+                            Icon(
+                                imageVector = Icons.Default.Favorite,
+                                contentDescription = null,
+                                tint = if (clothingItem.isFavorite) Color.Red else Color.LightGray
+                            )
+                        }
                     }
                 }
             }

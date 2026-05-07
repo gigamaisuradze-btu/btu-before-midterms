@@ -6,9 +6,10 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ClothingItem(
+    val id: Int,
     val title: String,
     val price: Int,
-    @DrawableRes val image: Int,
+    val imageUrl: String,
     val isFavorite: Boolean,
     val clothingType: ClothingType
 ) : Parcelable

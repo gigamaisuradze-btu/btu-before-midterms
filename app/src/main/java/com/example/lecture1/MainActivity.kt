@@ -1,9 +1,11 @@
 package com.example.lecture1
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,6 +22,7 @@ import com.example.lecture1.ui.theme.Lecture1Theme
 import com.example.lecture1.screen.ClothingViewModel
 
 class MainActivity : ComponentActivity() {
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +53,7 @@ class MainActivity : ComponentActivity() {
                             isLoading = uiState.isLoading,
                             onItemClick = { viewModel.onItemClick(it) },
                             onFilterClick = { viewModel.onFilterClick(it) },
-                            onFavoriteClick = { viewModel.onFavoriteClick(it) }
+                            onFavoriteClick = { viewModel.postFavoriteCloth(it.id) }
                         )
                     }
 

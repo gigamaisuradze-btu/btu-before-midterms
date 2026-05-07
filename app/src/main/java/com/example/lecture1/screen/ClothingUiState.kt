@@ -1,11 +1,16 @@
 package com.example.lecture1.screen
 
+import android.os.Build
+import androidx.annotation.RequiresExtension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lecture1.model.ClothingItem
 import com.example.lecture1.model.ClothingType
 import com.example.lecture1.model.Data
 import com.example.lecture1.model.Filter
+import com.example.lecture1.network.ClothingRepository
+import com.example.lecture1.network.NetworkResult
+import com.example.lecture1.network.RetrofitClient
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +25,7 @@ data class ClothingUiState(
     val clothes: List<ClothingItem> = emptyList(),
     val filters: List<Filter> = emptyList(),
     val isLoading: Boolean = true,
+    val errorMessage: String? = null,
 ) {
     val selectedFilter: Filter? = filters.find { it.isSelected }
 
@@ -29,6 +35,7 @@ data class ClothingUiState(
     }
 }
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 class ClothingViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ClothingUiState())
     val uiState: StateFlow<ClothingUiState> = _uiState.asStateFlow()
@@ -36,20 +43,58 @@ class ClothingViewModel : ViewModel() {
     private val _navigationEvent = MutableSharedFlow<ClothingItem>()
     val navigationEvent: SharedFlow<ClothingItem> = _navigationEvent.asSharedFlow()
 
+    private val clothingRepository = ClothingRepository()
+
     init {
+        fetchClothes()
+    }
+
+    fun postFavoriteCloth(id: Int) {
         viewModelScope.launch {
+            _uiState.update {
+                it.copy(isLoading = true)
+            }
 
-            delay(5000)
+            when (val result = clothingRepository.postClothFavorite(id)) {
+                is NetworkResult.Success -> {
+                    fetchClothes()
+                }
 
-            _uiState.update { current ->
-                current.copy(
-                    isLoading = false,
-                    filters = Data.filters,
-                    clothes = Data.clothingItems
-                )
+                is NetworkResult.Failure -> {
+
+                }
             }
         }
+    }
 
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+    private fun fetchClothes() {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(isLoading = true)
+            }
+
+            when (val result = clothingRepository.getClothes()) {
+                is NetworkResult.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            filters = Data.filters,
+                            clothes = result.data
+                        )
+                    }
+                }
+
+                is NetworkResult.Failure -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message
+                        )
+                    }
+                }
+            }
+        }
     }
 
     fun onItemClick(item: ClothingItem) {

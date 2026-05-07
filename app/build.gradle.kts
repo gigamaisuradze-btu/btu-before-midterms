@@ -46,6 +46,12 @@ android {
 }
 
 dependencies {
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp.core)
+    implementation(libs.okhttp.logging)
+    implementation(libs.gson)
+    implementation(libs.coil)
     implementation(libs.androidx.compose.animation.core)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

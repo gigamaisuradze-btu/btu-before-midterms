@@ -16,7 +16,7 @@ data class ClothingItem(
 
 @Parcelize
 enum class ClothingType : Parcelable {
-    TROUSERS,
+    TROUSERS(),
     ALL,
     SHIRTS,
     HOODIES,

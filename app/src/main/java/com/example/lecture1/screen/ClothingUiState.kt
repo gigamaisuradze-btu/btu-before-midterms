@@ -40,35 +40,43 @@ class ClothingViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ClothingUiState())
     val uiState: StateFlow<ClothingUiState> = _uiState.asStateFlow()
 
+
     private val _navigationEvent = MutableSharedFlow<ClothingItem>()
     val navigationEvent: SharedFlow<ClothingItem> = _navigationEvent.asSharedFlow()
 
     private val clothingRepository = ClothingRepository()
 
     init {
-        fetchClothes()
+        observeDatabase()
+        refresh()
     }
 
-    fun postFavoriteCloth(id: Int) {
+    fun postFavoriteCloth(id: Int, favorite: Boolean) {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(isLoading = true)
             }
 
-            when (val result = clothingRepository.postClothFavorite(id)) {
-                is NetworkResult.Success -> {
-                    fetchClothes()
-                }
+            clothingRepository.postClothFavorite(id = id, favorite = favorite)
 
-                is NetworkResult.Failure -> {
+            _uiState.update {
+                it.copy(isLoading = false)
+            }
+        }
+    }
 
+    private fun observeDatabase() {
+        viewModelScope.launch {
+            clothingRepository.getClothesFromDB().collect { items ->
+                _uiState.update {
+                    it.copy(clothes = items)
                 }
             }
         }
     }
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    private fun fetchClothes() {
+    private fun refresh() {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(isLoading = true)
@@ -77,20 +85,13 @@ class ClothingViewModel : ViewModel() {
             when (val result = clothingRepository.getClothes()) {
                 is NetworkResult.Success -> {
                     _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            filters = Data.filters,
-                            clothes = result.data
-                        )
+                        it.copy(isLoading = false, errorMessage = null)
                     }
                 }
 
                 is NetworkResult.Failure -> {
                     _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = result.message
-                        )
+                        it.copy(isLoading = false, errorMessage = result.message)
                     }
                 }
             }

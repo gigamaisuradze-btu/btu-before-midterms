@@ -30,7 +30,6 @@ fun ClothingScreen(
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
-            Log.d("LOADING SCREEN", "ClothingScreen: ")
             FiltersList(
                 filters = filters,
                 onFilterClick = { onFilterClick.invoke(it) }

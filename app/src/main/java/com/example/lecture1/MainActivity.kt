@@ -49,11 +49,11 @@ class MainActivity : ComponentActivity() {
                     composable(route = LIST_SCREEN) {
                         ClothingScreen(
                             filters = uiState.filters,
-                            clothes = uiState.filteredClothes,
+                            clothes = uiState.clothes,
                             isLoading = uiState.isLoading,
                             onItemClick = { viewModel.onItemClick(it) },
                             onFilterClick = { viewModel.onFilterClick(it) },
-                            onFavoriteClick = { viewModel.postFavoriteCloth(it.id) }
+                            onFavoriteClick = { viewModel.postFavoriteCloth(it.id, !it.isFavorite) }
                         )
                     }
 
